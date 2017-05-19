@@ -55,8 +55,12 @@ class LCDI2C{
     // Supporting Properties
     private var temp = [String:UInt8]()       // Temp data
 
-    private var clockData: UInt8{
-        return ((polarity.rawValue & (temp["backlight"] ?? 1)) << bl) | (0 << e)
+    public var clockData: UInt8{
+        var backlightBit = temp["bl"] ?? 1
+        if polarity == .Negative{
+            backlightBit = ~backlightBit & 1
+        }
+        return backlightBit << bl
     }
 
     init(address: UInt8, width: UInt8, height: UInt8, rs: UInt8 = 0, rw: UInt8  = 1, e: UInt8 = 2, bl: UInt8 = 3, polarity: Polarity = .Positive) throws {
@@ -68,7 +72,7 @@ class LCDI2C{
         self.bl         = bl
         self.e          = e
         self.polarity   = polarity
-        self.temp["backlight"] = 1
+        self.temp["bl"] = 1
         self.device     = try I2CBusDevice(portNumber: 1)
         initDisplay()
     }
