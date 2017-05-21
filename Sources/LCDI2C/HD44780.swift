@@ -22,7 +22,7 @@ internal let bitAddressDDRAM: UInt8 = 7
 
 
 
-class LCDI2C{
+class LCD{
     public enum Polarity: UInt8 {
         case Negative
         case Positive
@@ -249,8 +249,17 @@ class LCDI2C{
     public func draw(_ customChar: [UInt8], at: UInt8){
         guard customChar.count == 8 else {return}
         guard 0...7 ~= at else {return}
+        let lastAddress = temp["AC"] ?? 0
         setAddress(type: .CGRAM, address: at << 3)
         sendData(act: .Write, type: .Data, data: customChar)
+        setAddress(type: .DDRAM, address: lastAddress)
+    }
+    
+    public func draw(_ customByte: UInt8, at: UInt8){
+        let lastAddress = temp["AC"] ?? 0
+        setAddress(type: .CGRAM, address: at)
+        sendData(act: .Write, type: .Data, data: [customByte])
+        setAddress(type: .DDRAM, address: lastAddress)        
     }
 
     private func sendData(act: Action, type: CommandType, data: [UInt8]){
