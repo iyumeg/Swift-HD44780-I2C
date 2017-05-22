@@ -22,7 +22,7 @@ internal let bitAddressDDRAM: UInt8 = 7
 
 
 
-class LCD{
+public class LCD{
     public enum Polarity: UInt8 {
         case Negative
         case Positive
